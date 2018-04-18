@@ -15,7 +15,7 @@ from fabric.api import *
 env.user = 'webusr'
 env.password = '1q2ws3edc$'
 # The servers where the commands are executed
-env.hosts = ['112.74.58.94']
+env.hosts = ['47.52.200.161']
 # www folder
 project_folder = '/appl/projects/theta/www'
 

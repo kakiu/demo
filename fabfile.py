@@ -12,12 +12,12 @@
 from fabric.api import *
 
 # The user to use for the remote commands
-env.user = ''
-env.password = ''
+env.user = 'webusr'
+env.password = '1q2ws3edc$'
 # The servers where the commands are executed
-env.hosts = ['']
+env.hosts = ['47.52.200.161']
 # www folder
-project_folder = '/appl/projects/fb/www'
+project_folder = '/appl/projects/theta/www'
 
 
 def deploy():

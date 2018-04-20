@@ -109,6 +109,7 @@ def new(post_id=None):
             # Change
             else:
                 existing = Post.find_one({'_id': post_id})
+                # existing = Post()
                 existing.title = post.title
                 existing.tids = post.tids
                 existing.body = post.body
@@ -195,3 +196,4 @@ def reply(post_id, comment_id):
     send_support_email('reply()', u'New reply %s on post %s.' % (content, post._id))
 
     return jsonify(success=True, message=_('Save reply successfully.'))
+

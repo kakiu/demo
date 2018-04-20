@@ -9,7 +9,7 @@
     :date: 16/5/12
 """
 
-from flask import Blueprint, render_template, current_app, session, redirect, request
+from flask import Blueprint, render_template, current_app, session, redirect, request, jsonify
 from flask_babel import gettext as _
 from flask_login import login_user, logout_user, login_required
 from flask_principal import identity_changed, Identity, AnonymousIdentity
@@ -22,16 +22,55 @@ from app.models import User
 from app.models import Price
 from app.tools import send_support_email
 import pymongo
+# -------------------------------------------------------
+from app.models import Post, Tag, User
+from app.mongosupport import Pagination, populate_model
+import datetime
+import app.okexapi.OkcoinSpotAPI as okex
+import time
 
+# -------------------------------------------------------
 public = Blueprint('public', __name__)
 
+# Query OKEX api
+apikey = None
+secretkey = None
+okcoinRESTURL = 'www.okcoin.com'
+# 现货API
+okcoinSpot = okex.OKCoinSpot(okcoinRESTURL, apikey, secretkey)
 
-# @public.route('/')
-# def index():
-#     """
-#     Index page.
-#     """
-#     return render_template('public/index.html')
+
+@public.route('/click', methods=["GET"])
+def price_new():
+    added = global_price_new(current_app._get_current_object())
+    return jsonify(success=True, prices=added, message='Success')
+
+
+def global_price_new(app):
+    code = 'btc_usd'
+    cursor = okcoinSpot.kline(code, '5min')
+    added = []
+    for c in cursor:
+        existing = Price.find_one({'date': unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000)))})
+        if not existing:
+            price = Price()
+            price.date = unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000)))
+            price.code = unicode(code)
+            price.open = float(c[1])
+            price.highest = float(c[2])
+            price.lowest = float(c[3])
+            price.close = float(c[4])
+            price.createTime = datetime.datetime.now()
+            price.save()
+
+            added.append(price)
+            app.logger.info('Saved %s' % price)
+        else:
+            app.logger.info(
+                'Skipped %s' % unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000))))
+    return added
+
+
 @public.route('/')
 def index():
     """

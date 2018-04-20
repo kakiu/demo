@@ -30,6 +30,7 @@ from app.models import User
 from app.mongosupport import MongoSupportJSONEncoder
 from app.tools import SSLSMTPHandler, helpers
 from app.tools.converters import ListConverter, BSONObjectIdConverter
+import app.okexapi
 
 DEFAULT_APP_NAME = 'app'
 

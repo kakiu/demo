@@ -48,7 +48,7 @@ def price_new():
 
 def global_price_new(app):
     code = 'btc_usd'
-    cursor = okcoinSpot.kline(code, '5min')
+    cursor = okcoinSpot.kline(code, '12hour')
     added = []
     for c in cursor:
         existing = Price.find_one({'date': unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000)))})

@@ -31,7 +31,7 @@
 
 {% block script %}
     <script src="{{ base_url() }}/js/echarts.min.js"></script>
-{#    <button type="button" onclick="showData()">Click Me!</button>#}
+    <button type="button" onclick="showData()">Click Me!</button>
     <script type="text/javascript">
         // http://echarts.baidu.com/examples/editor.html?c=candlestick-sh&theme=light
         upColor = '#ec0000';
@@ -259,7 +259,4 @@
         var myChart = echarts.init(document.getElementById('div-chart'));
         myChart.setOption(option);
     </script>
-
-    <button type="button" onclick="showData()">Click Me!</button>
-
 {% endblock %}

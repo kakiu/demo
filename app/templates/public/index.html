@@ -38,6 +38,10 @@
         var upBorderColor = '#8A0000';
         var downColor = '#00da3c';
         var downBorderColor = '#008F28';
+        function showData(){
+            // 数据写入mongodb，然后显示到页面
+            window.open("{{ url_for("public.price_new") }}");
+        }
         // 数据意义：开盘(open)，收盘(close)，最低(lowest)，最高(highest)
         var data0 = splitData({{prices|tojson}});
 
@@ -250,10 +254,6 @@
                 },
             ]
         };
-        function showData(){
-            // 数据写入mongodb，然后显示到页面
-            window.open("{{ url_for("public.price_new") }}");
-        }
         var myChart = echarts.init(document.getElementById('div-chart'));
         myChart.setOption(option);
     </script>

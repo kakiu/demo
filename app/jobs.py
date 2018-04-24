@@ -17,7 +17,7 @@ from collections import Counter
 import schedule
 
 from app.models import Post
-# from app.views.public import okex_global_price_new
+from app.views.public import okex_global_price_new
 from app.views.public import bitfinex_global_price_new
 
 post_view_times_counter = Counter()
@@ -40,15 +40,15 @@ def update_view_times(app):
                 app.logger.exception('Failed when updating the viewTime for album %s' % p._id)
 
 
-# def okex_update_prices(app):
-#     """
-#     Update view times for posts.
-#     """
-#     app.logger.info('Scheduler update_prices running: %s' % post_view_times_counter)
-#     try:
-#         okex_global_price_new(app)
-#     except:
-#         app.logger.exception('Failed when updating the prices')
+def okex_update_prices(app):
+    """
+    Update view times for posts.
+    """
+    app.logger.info('Scheduler update_prices running: %s' % post_view_times_counter)
+    try:
+        okex_global_price_new(app)
+    except:
+        app.logger.exception('Failed when updating the prices')
 
 
 def bitfinex_update_prices(app):
@@ -69,7 +69,7 @@ def run_schedule(app):
     # For schedule rules please refer to https://github.com/dbader/schedule
     schedule.every(20).minutes.do(update_view_times, app)
 
-    # schedule.every(1).minutes.do(okex_update_prices, app)
+    schedule.every(1).minutes.do(okex_update_prices, app)
 
     schedule.every(1).minutes.do(bitfinex_update_prices, app)
 

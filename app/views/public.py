@@ -43,34 +43,34 @@ bitfinexUrl = "https://api.bitfinex.com/v2/candles/"
 
 
 # @public.route('/click', methods=["GET"])
-# def okex_price_new():
-#     added = okex_global_price_new(current_app._get_current_object())
-#     return jsonify(success=True, prices=added, message='Success')
-#
-#
-# def okex_global_price_new(app):
-#     code = 'btc_usd'
-#     cursor = okcoinSpot.kline(code, '12hour')
-#     added = []
-#     for c in cursor:
-#         existing = Price.find_one({'date': unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000)))})
-#         if not existing:
-#             price = Price()
-#             price.date = unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000)))
-#             price.code = unicode(code)
-#             price.open = float(c[1])
-#             price.highest = float(c[2])
-#             price.lowest = float(c[3])
-#             price.close = float(c[4])
-#             price.createTime = datetime.datetime.now()
-#             price.save()
-#
-#             added.append(price)
-#             app.logger.info('Saved %s' % price)
-#         else:
-#             app.logger.info(
-#                 'Skipped %s' % unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000))))
-#     return added
+def okex_price_new():
+    added = okex_global_price_new(current_app._get_current_object())
+    return jsonify(success=True, prices=added, message='Success')
+
+
+def okex_global_price_new(app):
+    code = 'btc_usd'
+    cursor = okcoinSpot.kline(code, '12hour')
+    added = []
+    for c in cursor:
+        existing = Price.find_one({'date': unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000)))})
+        if not existing:
+            price = Price()
+            price.date = unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000)))
+            price.code = unicode(code)
+            price.open = float(c[1])
+            price.highest = float(c[2])
+            price.lowest = float(c[3])
+            price.close = float(c[4])
+            price.createTime = datetime.datetime.now()
+            price.save()
+
+            added.append(price)
+            app.logger.info('Saved %s' % price)
+        else:
+            app.logger.info(
+                'Skipped %s' % unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000))))
+    return added
 
 
 @public.route('/click', methods=["GET"])

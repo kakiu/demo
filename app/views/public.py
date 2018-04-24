@@ -42,7 +42,7 @@ okcoinSpot = okex.OKCoinSpot(okcoinRESTURL, apikey, secretkey)
 bitfinexUrl = "https://api.bitfinex.com/v2/candles/"
 
 
-@public.route('/click', methods=["GET"])
+# @public.route('/click', methods=["GET"])
 def okex_price_new():
     added = okex_global_price_new(current_app._get_current_object())
     return jsonify(success=True, prices=added, message='Success')
@@ -80,7 +80,7 @@ def bitfinex_price_new():
 
 
 def bitfinex_global_price_new(app):
-    TimeFrame = 'trade:' + '1h' + ':'
+    TimeFrame = 'trade:' + '12h' + ':'
     code = 'tBTCUSD'
     Section = '/hist'  # /hist 或者 /last
     url = bitfinexUrl + TimeFrame + code + Section

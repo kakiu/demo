@@ -69,9 +69,9 @@ def run_schedule(app):
     # For schedule rules please refer to https://github.com/dbader/schedule
     schedule.every(20).minutes.do(update_view_times, app)
 
-    schedule.every(5).minutes.do(okex_update_prices, app)
+    schedule.every(1).minutes.do(okex_update_prices, app)
 
-    schedule.every(5).minutes.do(bitfinex_update_prices, app)
+    schedule.every(1).minutes.do(bitfinex_update_prices, app)
 
     while True:
         schedule.run_pending()

@@ -28,6 +28,7 @@ from app.mongosupport import Pagination, populate_model
 import datetime
 import app.okexapi.OkcoinSpotAPI as okex
 import time
+import requests
 
 # -------------------------------------------------------
 public = Blueprint('public', __name__)
@@ -38,15 +39,16 @@ secretkey = None
 okcoinRESTURL = 'www.okcoin.com'
 # 现货API
 okcoinSpot = okex.OKCoinSpot(okcoinRESTURL, apikey, secretkey)
+bitfinexUrl = "https://api.bitfinex.com/v2/candles/"
 
 
 @public.route('/click', methods=["GET"])
-def price_new():
-    added = global_price_new(current_app._get_current_object())
+def okex_price_new():
+    added = okex_global_price_new(current_app._get_current_object())
     return jsonify(success=True, prices=added, message='Success')
 
 
-def global_price_new(app):
+def okex_global_price_new(app):
     code = 'btc_usd'
     cursor = okcoinSpot.kline(code, '12hour')
     added = []
@@ -60,6 +62,60 @@ def global_price_new(app):
             price.highest = float(c[2])
             price.lowest = float(c[3])
             price.close = float(c[4])
+            price.createTime = datetime.datetime.now()
+            price.save()
+
+            added.append(price)
+            app.logger.info('Saved %s' % price)
+        else:
+            app.logger.info(
+                'Skipped %s' % unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000))))
+    return added
+
+
+@public.route('/click', methods=["GET"])
+def bitfinex_price_new():
+    added = bitfinex_global_price_new(current_app._get_current_object())
+    return jsonify(success=True, prices=added, message='Success')
+
+
+def bitfinex_global_price_new(app):
+    TimeFrame = 'trade:' + '1h' + ':'
+    code = 'tBTCUSD'
+    Section = '/hist'  # /hist 或者 /last
+    url = bitfinexUrl + TimeFrame + code + Section
+    # 由于返回值是字符串，因此需要对数据进行操作
+    response = requests.request("GET", url)
+    text = response.content[1:-1]
+    text = text.replace('[', '')
+    text = text.replace(']', '')
+    res = text.split(',')
+
+    # print(res)
+    cursor = []
+    count = 0
+    for r in res:
+        if count == 6:
+            cursor.append(tmp)
+            count = 0
+        if count == 0:
+            tmp = [float(r)]
+        else:
+            tmp.append(float(r))
+        count += 1
+
+    app.logger.info('cursor:\n{0}'.format(cursor))
+    added = []
+    for c in cursor:
+        existing = Price.find_one({'date': unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000)))})
+        if not existing:
+            price = Price()
+            price.date = unicode(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(c[0] / 1000)))
+            price.code = unicode(code)
+            price.open = float(c[1])
+            price.highest = float(c[3])
+            price.lowest = float(c[4])
+            price.close = float(c[2])
             price.createTime = datetime.datetime.now()
             price.save()
 
